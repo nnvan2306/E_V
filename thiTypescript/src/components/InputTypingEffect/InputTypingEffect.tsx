@@ -22,5 +22,13 @@ export const InputTypingEffect = ({
         };
     });
 
-    return <input {...passedProps} placeholder={placeholder} />;
+    return (
+        <input
+            {...passedProps}
+            placeholder={placeholder}
+            // style={{
+            //     paddingLeft: '10px',
+            // }}
+        />
+    );
 };

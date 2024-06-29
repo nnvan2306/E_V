@@ -5,6 +5,8 @@ import { InputTypingEffect } from '../../InputTypingEffect/InputTypingEffect';
 import ChatItem from '../../ChatItems/ChatItems';
 import { IResponse } from '../../../interface';
 import { handleGetAnswerAi } from '../../../api/chatAiService';
+import Welcome, { TopChatHeading } from '../../Welcome/Welcome';
+import { useLocation } from 'react-router-dom';
 
 const Chat = () => {
     const [text, setText] = useState<string>('');
@@ -17,8 +19,18 @@ const Chat = () => {
     const [shouldSpeak, setShouldSpeak] = useState<boolean>(true);
     const [questionSuggest, setQuestionSuggest] = useState<string>('');
     const [data_chat, setData_hat] = useState<Partial<IResponse<any>>[]>([]);
+    const [isWelcome, setIsWelcome] = useState<boolean>(true);
+
+    const location = useLocation().pathname;
 
     // const { data_chat, updateDataChat } = useAppStore();
+
+    useEffect(() => {
+        if (location === '/chat-ai' || location === '/chat') {
+            setIsWelcome(false);
+            setIsWelcome(false);
+        }
+    }, [location]);
 
     useEffect(() => {
         setText('Xin chào, hiện tại bot có thể giúp gì cho bạn');
@@ -157,88 +169,113 @@ const Chat = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const handleCloseWelcome = () => {
+        setIsWelcome(false);
+    };
+
     return (
         <div
             className=" d-flex flex-column  position-relative"
             style={{ background: '#f0f3fa', width: '100%', height: '100%' }}
         >
-            {/* <div className="relative">
-                <TopChatHeading
-                    is_show_setting
-                    height={300}
-                    text="Hãy đặt câu hỏi ở phía dưới. bạn có thể sử dụng micro để quá trình nhanh hơn nhé 😉"
-                    dataMute={{
-                        isMute,
-                        setIsMute,
-                    }}
-                />
-            </div> */}
-            <div
-                className="body-form-chat flex-grow-1 bg-custom px-3 py-2 overflow-auto"
-                style={{ background: '#f0f3fa' }}
-            >
-                {/* <HelloUser setQuestionSuggest={setQuestionSuggest} /> */}
-                {data_chat &&
-                    data_chat.length > 0 &&
-                    data_chat.map((chatItem, index) => {
-                        return <ChatItem data={chatItem} key={index} />;
-                    })}
-                {isLoading && <PendingResChatUser />}
-                <div ref={divRenderChat} />
-            </div>
-
-            <div
-                className="chat_input d-flex  justify-content-between align-items-center custom-height px-2 pt-2 pb-2"
-                style={{
-                    width: '100%',
-                    height: '50px',
-                    borderTop: '1.5px solid #ccc',
-                    bottom: '0px',
-                    zIndex: '1000',
-                    overflow: 'hidden',
-                    background: '#fff',
-                }}
-            >
-                <InputTypingEffect
-                    placeholder="Hãy nhập câu hỏi bạn cần giải đáp ..."
-                    className="w-100 d-block custom-outline-none custom-padding custom-height custom-font-size"
+            <>
+                {' '}
+                <div className="relative" style={{ display: 'flex', justifyContent: 'end' }}>
+                    {/* {location === '/chat-ai' || location === '/chat' ? null : (
+                        // <TopChatHeading
+                        //     is_show_setting
+                        //     height={300}
+                        //     text="Hãy đặt câu hỏi ở phía dưới. bạn có thể sử dụng micro để quá trình nhanh hơn nhé 😉"
+                        // dataMute={{
+                        //     isMute,
+                        //     setIsMute,
+                        // }}
+                        // />
+                    )} */}
+                    <Welcome
+                        isWelcome={isWelcome}
+                        handleCloseWelcome={handleCloseWelcome}
+                        dataMute={{
+                            isMute,
+                            setIsMute,
+                        }}
+                    />
+                </div>
+                <div
+                    className="body-form-chat flex-grow-1 bg-custom px-3  overflow-auto"
+                    style={{ background: '#f0f3fa', paddingTop: '20px' }}
+                >
+                    {/* <HelloUser setQuestionSuggest={setQuestionSuggest} /> */}
+                    {data_chat &&
+                        data_chat.length > 0 &&
+                        data_chat.map((chatItem, index) => {
+                            return <ChatItem data={chatItem} key={index} />;
+                        })}
+                    {isLoading && <PendingResChatUser />}
+                    <div ref={divRenderChat} />
+                </div>
+                <div
+                    className="chat_input d-flex justify-content-between align-items-center custom-height"
                     style={{
-                        outline: 'none',
-                        padding: '15px',
-                        height: '30px',
-                        font: ' 14px',
+                        width: '100%',
+                        height: '50px',
+                        borderTop: '1.5px solid #ccc',
+                        alignItems: 'end',
+                        bottom: '0px',
+                        zIndex: '1000',
+                        overflow: 'hidden',
+                        background: '#fff',
                     }}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)}
-                    value={inputText}
-                    onKeyDown={(e) => {
-                        if (e.keyCode === 13) {
-                            handleSendMessage();
-                        }
-                    }}
-                />
-
-                <div className="px-[10px]" style={{ padding: '0 10px' }}>
-                    {inputText ? (
-                        <SendOutlined
-                            style={{
-                                fontSize: 16,
-                                color: '#1677ff',
-                            }}
-                            className="rotate-[-45deg] cursor-pointer"
-                            onClick={handleSendMessage}
-                        />
+                >
+                    {isWelcome ? (
+                        <></>
                     ) : (
-                        <AudioOutlined
-                            onClick={handleGetAudioAndSend}
-                            style={{
-                                fontSize: 16,
-                                color: '#1677ff',
-                            }}
-                            className={`cursor-pointer  ${isActiveAudio ? 'micro-active' : ''}`}
-                        />
+                        <>
+                            <InputTypingEffect
+                                placeholder="Hãy nhập câu hỏi bạn cần giải đáp ..."
+                                className="w-100 d-block custom-outline-none custom-padding custom-height custom-font-size"
+                                style={{
+                                    outline: 'none',
+                                    paddingLeft: '15px',
+                                    height: '100%',
+                                    font: ' 14px',
+                                    border: 'none',
+                                    borderBottomLeftRadius: '10px',
+                                }}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)}
+                                value={inputText}
+                                onKeyDown={(e) => {
+                                    if (e.keyCode === 13) {
+                                        handleSendMessage();
+                                    }
+                                }}
+                            />
+
+                            <div className="" style={{ padding: '0 10px' }}>
+                                {inputText ? (
+                                    <SendOutlined
+                                        style={{
+                                            fontSize: 16,
+                                            color: '#1677ff',
+                                        }}
+                                        className="rotate-[-45deg] cursor-pointer"
+                                        onClick={handleSendMessage}
+                                    />
+                                ) : (
+                                    <AudioOutlined
+                                        onClick={handleGetAudioAndSend}
+                                        style={{
+                                            fontSize: 16,
+                                            color: '#1677ff',
+                                        }}
+                                        className={`cursor-pointer  ${isActiveAudio ? 'micro-active' : ''}`}
+                                    />
+                                )}
+                            </div>
+                        </>
                     )}
                 </div>
-            </div>
+            </>
         </div>
     );
 };
