@@ -1,0 +1,61 @@
+#plugin {
+    position: fixed;
+    bottom  : 20px;
+    right   : 20px;
+    z-index : 9999999;
+
+    .icon-plugin {
+        float           : right;
+        background-color: #0084ff;
+        border-radius   : 9999999999999px;
+        padding         : 0 10px;
+
+        &:hover {
+            opacity: 0.8;
+            cursor : pointer;
+        }
+
+        span {
+            font-weight: 600;
+        }
+
+        img {
+            width     : 50px;
+            height    : 50px;
+            object-fit: cover;
+            cursor    : pointer;
+        }
+    }
+
+    .content-chat {
+        display: none;
+
+        iframe {
+            width : 100%;
+            height: 100%;
+            border: none;
+        }
+    }
+
+    &.show-plugin-content {
+
+        .content-chat {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            /* box-shadow   : 0 6px 6px 0 rgba(0, 0, 0, 0.2); */
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            height       : 80vh;
+            width        : 450px;
+            display      : none;
+            padding-top: 20px ;
+            background-color: #f0f3fa;
+        }
+
+        .content-show {
+            display      : block;
+            border-radius: 10px;
+            overflow     : hidden;
+            background   : #fff;
+        }
+    }
+}
