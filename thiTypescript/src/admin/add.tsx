@@ -15,6 +15,7 @@ import { Typography, notification } from 'antd';
 const { Paragraph, Text } = Typography;
 import type { NotificationArgsProps } from 'antd';
 import Chat from '../components/ChatAi/Chat/Chat';
+import _ from 'lodash';
 
 export default function Add({ handelTranslateShow, handelTranslateHide, getTextTranslate }: any) {
     const [inputText, setInputText] = useState('');
@@ -155,6 +156,11 @@ export default function Add({ handelTranslateShow, handelTranslateHide, getTextT
     };
 
     const handleToggleModal = () => {
+        if (!user || _.isEmpty(user)) {
+            alert('Vui lòng đăng nhập để dùng tính năng này ');
+            navigate('/login');
+            return;
+        }
         setIsActive(!isActive);
     };
     const [isShowWelcome, setIsShowWelcome] = useState<boolean>(true);
@@ -163,12 +169,11 @@ export default function Add({ handelTranslateShow, handelTranslateHide, getTextT
         <div className="">
             {isActive && (
                 <div
+                    className="render_chat_content"
                     style={{
-                        width: '400px',
                         height: '80vh',
                         position: 'fixed',
                         bottom: '100px',
-                        right: '40px',
                         zIndex: 100,
                         marginTop: '10vh',
                         borderRadius: '10px',
