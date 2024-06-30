@@ -11,6 +11,7 @@ export interface IResponse<T> {
     // is_video: boolean;
     // is_audio: boolean;
     // is_unknown: boolean;
+    is_stream?: boolean;
 }
 
 export interface IMessageUser {

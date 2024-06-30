@@ -48,6 +48,9 @@ const Chat = ({
     const [shouldSpeak, setShouldSpeak] = useState<boolean>(true);
     const [questionSuggest, setQuestionSuggest] = useState<string>('');
     const [data_chat, setData_Chat] = useState<Partial<IResponse<any>>[]>([]);
+    const [isSuggest, setIsSuggest] = useState<boolean>(false);
+    const [textSuggest, setTextSuggest] = useState<string>('');
+    const [reloadIntoView, setReloadIntoView] = useState<boolean>(true);
 
     //
     const chatSession = model.startChat({
@@ -59,7 +62,38 @@ const Chat = ({
         setText('Xin chào, hiện tại bot có thể giúp gì cho bạn');
     }, []);
 
-    useEffect(() => {}, [inputText]);
+    useEffect(() => {
+        if (!inputText.trim()) {
+            setIsSuggest(false);
+            setTextSuggest('');
+            return;
+        }
+
+        const textInput = inputText.toLowerCase().includes('nghĩa là');
+
+        if (textInput) {
+            const text = inputText.toLowerCase().split('nghĩa là')[0];
+            if (text) {
+                if (setTextSearchSuggestions) {
+                    setIsSuggest(true);
+                    setTextSuggest(text);
+                }
+            }
+        } else {
+            const regex =
+                /(?:từ\s+)?(\w+)\s+(có\s+nghĩa\s+là|là|có\s+nghĩa\s+là\s+gì|là\s+gì|nghĩa\s+của\s+\1\s+là\s+gì)/i;
+            const match = inputText.match(regex);
+            if (match) {
+                const text = match[1];
+                if (text) {
+                    if (setTextSearchSuggestions) {
+                        setIsSuggest(true);
+                        setTextSuggest(text);
+                    }
+                }
+            }
+        }
+    }, [inputText]);
 
     useEffect(() => {
         if (isMute) {
@@ -80,8 +114,8 @@ const Chat = ({
 
     useEffect(() => {
         if (!divRenderChat.current) return;
-        divRenderChat.current.scrollIntoView();
-    }, [data_chat]);
+        divRenderChat?.current?.scrollIntoView();
+    }, [data_chat, divRenderChat, reloadIntoView]);
 
     useEffect(() => {
         if (data_chat.length > 0) {
@@ -91,7 +125,6 @@ const Chat = ({
 
     const handleGetAudioAndSend = () => {
         if (!refAudio.current) return;
-
         refAudio.current.start();
         setIsActiveAudio(true);
     };
@@ -139,6 +172,7 @@ const Chat = ({
                 is_mark_down: true,
                 data: data.response.text(),
                 is_ai: true,
+                is_stream: true,
             };
 
             setData_Chat((prev) => [...prev, dataBuider]);
@@ -180,7 +214,12 @@ const Chat = ({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    const [isSuggest, setIsSuggest] = useState<boolean>(true);
+    const callIntoView = () => {
+        setTimeout(() => {
+            if (!divRenderChat.current) return;
+            divRenderChat?.current?.scrollIntoView();
+        }, 100);
+    };
 
     return (
         <div
@@ -222,7 +261,10 @@ const Chat = ({
                             {data_chat &&
                                 data_chat.length > 0 &&
                                 data_chat.map((chatItem, index) => {
-                                    return <ChatItem data={chatItem} key={index} />;
+                                    if (index + 1 == data_chat.length) {
+                                        callIntoView();
+                                    }
+                                    return <ChatItem toggle={setReloadIntoView} data={chatItem} key={index} />;
                                 })}
                             {isLoading && <PendingResChatUser />}
                             <div ref={divRenderChat} />
@@ -237,6 +279,7 @@ const Chat = ({
                                 bottom: '0px',
                                 zIndex: '1000',
                                 overflow: 'hidden',
+                                flexShrink: 0,
                                 background: '#fff',
                             }}
                         >
@@ -253,7 +296,7 @@ const Chat = ({
                                             Có thể bạn đang muốn
                                         </h3>
                                         <p>
-                                            Dịch từ <strong>Hello</strong> đúng không
+                                            Dịch từ <strong>{textSuggest}</strong> đúng không
                                         </p>
                                         <p className="mb-3 mt-2">
                                             Nếu đúng hãy click{' '}
@@ -261,8 +304,9 @@ const Chat = ({
                                                 type="primary"
                                                 onClick={() => {
                                                     if (setTextSearchSuggestions) {
-                                                        setTextSearchSuggestions('Hello');
+                                                        setTextSearchSuggestions(textSuggest);
                                                         setIsSuggest(false);
+                                                        setTextSuggest('');
                                                     }
                                                 }}
                                             >
@@ -276,6 +320,8 @@ const Chat = ({
                                                 type="dashed"
                                                 onClick={() => {
                                                     setIsSuggest(false);
+                                                    setIsSuggest(false);
+                                                    setTextSuggest('');
                                                 }}
                                             >
                                                 Vào đây
