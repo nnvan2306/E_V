@@ -7,7 +7,8 @@ const { Paragraph } = Typography;
 
 const ChatItem: React.FC<{
     data: Partial<IResponse<any>>;
-}> = ({ data }) => {
+    toggle?: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ data, toggle }) => {
     if (!data.is_ai) {
         return (
             <div className="mb-3">
@@ -17,14 +18,22 @@ const ChatItem: React.FC<{
     }
     return (
         <div className="mb-3">
-            <ChatItemForBot data={data} is_null_result={data.data ? false : true} />
+            <ChatItemForBot toggle={toggle} data={data} is_null_result={data.data ? false : true} />
         </div>
     );
 };
 
 export default ChatItem;
 
-function ChatItemForBot({ data, is_null_result = false }: { data: Partial<IResponse<any>>; is_null_result?: boolean }) {
+function ChatItemForBot({
+    data,
+    is_null_result = false,
+    toggle,
+}: {
+    data: Partial<IResponse<any>>;
+    is_null_result?: boolean;
+    toggle?: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
     return (
         <div
             className="d-flex mb-4  justify-content-start custom-gap custom-max-width"
@@ -53,7 +62,7 @@ function ChatItemForBot({ data, is_null_result = false }: { data: Partial<IRespo
                 }}
             >
                 {!is_null_result ? (
-                    <>{data.is_mark_down && <ChatMarkDown data={data} />}</>
+                    <>{data.is_mark_down && <ChatMarkDown toggle={toggle} data={data} />}</>
                 ) : (
                     <p>Bot xin lỗi vì chưa thể hiểu ý của bạn</p>
                 )}

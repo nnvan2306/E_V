@@ -46,10 +46,10 @@ const Chat = ({
     const divRenderChat = useRef<HTMLDivElement>(null);
     const [shouldSpeak, setShouldSpeak] = useState<boolean>(true);
     const [questionSuggest, setQuestionSuggest] = useState<string>('');
-    const [data_chat, setData_hat] = useState<Partial<IResponse<any>>[]>([]);
+    const [data_chat, setData_Chat] = useState<Partial<IResponse<any>>[]>([]);
     const [isSuggest, setIsSuggest] = useState<boolean>(false);
     const [textSuggest, setTextSuggest] = useState<string>('');
-    const [data_chat, setData_Chat] = useState<Partial<IResponse<any>>[]>([]);
+    const [reloadIntoView, setReloadIntoView] = useState<boolean>(true);
 
     //
     const chatSession = model.startChat({
@@ -113,8 +113,8 @@ const Chat = ({
 
     useEffect(() => {
         if (!divRenderChat.current) return;
-        divRenderChat.current.scrollIntoView();
-    }, [data_chat]);
+        divRenderChat?.current?.scrollIntoView();
+    }, [data_chat, divRenderChat, reloadIntoView]);
 
     useEffect(() => {
         if (data_chat.length > 0) {
@@ -124,7 +124,6 @@ const Chat = ({
 
     const handleGetAudioAndSend = () => {
         if (!refAudio.current) return;
-
         refAudio.current.start();
         setIsActiveAudio(true);
     };
@@ -172,6 +171,7 @@ const Chat = ({
                 is_mark_down: true,
                 data: data.response.text(),
                 is_ai: true,
+                is_stream: true,
             };
 
             setData_Chat((prev) => [...prev, dataBuider]);
@@ -213,6 +213,13 @@ const Chat = ({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
+    const callIntoView = () => {
+        setTimeout(() => {
+            if (!divRenderChat.current) return;
+            divRenderChat?.current?.scrollIntoView();
+        }, 100);
+    };
+
     return (
         <div
             className=" d-flex flex-col umn  position-relative"
@@ -253,7 +260,10 @@ const Chat = ({
                             {data_chat &&
                                 data_chat.length > 0 &&
                                 data_chat.map((chatItem, index) => {
-                                    return <ChatItem data={chatItem} key={index} />;
+                                    if (index + 1 == data_chat.length) {
+                                        callIntoView();
+                                    }
+                                    return <ChatItem toggle={setReloadIntoView} data={chatItem} key={index} />;
                                 })}
                             {isLoading && <PendingResChatUser />}
                             <div ref={divRenderChat} />
@@ -268,6 +278,7 @@ const Chat = ({
                                 bottom: '0px',
                                 zIndex: '1000',
                                 overflow: 'hidden',
+                                flexShrink: 0,
                                 background: '#fff',
                             }}
                         >
