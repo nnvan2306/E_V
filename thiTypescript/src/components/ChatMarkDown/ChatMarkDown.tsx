@@ -12,8 +12,6 @@ const ChatMarkDown: React.FC<{ data: Partial<IResponse<any>> }> = ({ data }) => 
     const [answer, setAnswer] = useState<string>('');
     const [position, setPosition] = useState<number>(0);
 
-    console.log('data:', data);
-
     useEffect(() => {
         const intr = setInterval(() => {
             setAnswer(data.data.slice(0, position));

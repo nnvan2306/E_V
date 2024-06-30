@@ -9,6 +9,7 @@ import Welcome, { TopChatHeading } from '../../Welcome/Welcome';
 import { useLocation } from 'react-router-dom';
 import { Button, Popover } from 'antd';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import Typewriter from 'typewriter-effect';
 import Swal from 'sweetalert2';
 
 const apiKey = 'AIzaSyB0TSy9ma9ArMS8MfWrn7OuEqmFU98y_Hk';
