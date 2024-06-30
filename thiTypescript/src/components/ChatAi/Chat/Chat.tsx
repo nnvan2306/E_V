@@ -30,12 +30,45 @@ const Chat = ({
     const [shouldSpeak, setShouldSpeak] = useState<boolean>(true);
     const [questionSuggest, setQuestionSuggest] = useState<string>('');
     const [data_chat, setData_hat] = useState<Partial<IResponse<any>>[]>([]);
+    const [isSuggest, setIsSuggest] = useState<boolean>(false);
+    const [textSuggest, setTextSuggest] = useState<string>('');
 
     useEffect(() => {
         setText('Xin chào, hiện tại bot có thể giúp gì cho bạn');
     }, []);
 
-    useEffect(() => {}, [inputText]);
+    useEffect(() => {
+        if (!inputText.trim()) {
+            setIsSuggest(false);
+            setTextSuggest('');
+            return;
+        }
+
+        const textInput = inputText.toLowerCase().includes('nghĩa là');
+
+        if (textInput) {
+            const text = inputText.toLowerCase().split('nghĩa là')[0];
+            if (text) {
+                if (setTextSearchSuggestions) {
+                    setIsSuggest(true);
+                    setTextSuggest(text);
+                }
+            }
+        } else {
+            const regex =
+                /(?:từ\s+)?(\w+)\s+(có\s+nghĩa\s+là|là|có\s+nghĩa\s+là\s+gì|là\s+gì|nghĩa\s+của\s+\1\s+là\s+gì)/i;
+            const match = inputText.match(regex);
+            if (match) {
+                const text = match[1];
+                if (text) {
+                    if (setTextSearchSuggestions) {
+                        setIsSuggest(true);
+                        setTextSuggest(text);
+                    }
+                }
+            }
+        }
+    }, [inputText]);
 
     useEffect(() => {
         if (isMute) {
@@ -134,8 +167,6 @@ const Chat = ({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    const [isSuggest, setIsSuggest] = useState<boolean>(true);
-
     return (
         <div
             className=" d-flex flex-col umn  position-relative"
@@ -207,7 +238,7 @@ const Chat = ({
                                             Có thể bạn đang muốn
                                         </h3>
                                         <p>
-                                            Dịch từ <strong>Hello</strong> đúng không
+                                            Dịch từ <strong>{textSuggest}</strong> đúng không
                                         </p>
                                         <p className="mb-3 mt-2">
                                             Nếu đúng hãy click{' '}
@@ -215,8 +246,9 @@ const Chat = ({
                                                 type="primary"
                                                 onClick={() => {
                                                     if (setTextSearchSuggestions) {
-                                                        setTextSearchSuggestions('Hello');
+                                                        setTextSearchSuggestions(textSuggest);
                                                         setIsSuggest(false);
+                                                        setTextSuggest('');
                                                     }
                                                 }}
                                             >
@@ -230,6 +262,8 @@ const Chat = ({
                                                 type="dashed"
                                                 onClick={() => {
                                                     setIsSuggest(false);
+                                                    setIsSuggest(false);
+                                                    setTextSuggest('');
                                                 }}
                                             >
                                                 Vào đây
