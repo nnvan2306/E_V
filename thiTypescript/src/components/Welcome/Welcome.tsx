@@ -70,7 +70,7 @@ export default function Welcome({
                     >
                         <h3 className="font-[600] text-[18px] mb-3">Bạn cũng có thể liên hệ qua</h3>
                         <a
-                            href=""
+                            href="http://localhost:5173/chat-ai"
                             target="_blank"
                             className="mx-auto mb-3 flex justify-between text-current items-center pr-2 rounded-sm overflow-hidden px-[6px] py-[8px] hover:bg-[rgba(0,0,0,0.05)]"
                             style={{
@@ -83,7 +83,7 @@ export default function Welcome({
                             <i className="bi bi-arrow-right"></i>
                         </a>
                         <a
-                            href=""
+                            href="http://localhost:5173/user-saved"
                             target="_blank"
                             className="mx-auto mb-3 flex justify-between text-current items-center pr-2 rounded-sm overflow-hidden px-[6px] py-[8px] hover:bg-[rgba(0,0,0,0.05)]"
                             style={{
@@ -96,7 +96,7 @@ export default function Welcome({
                             <i className="bi bi-arrow-right"></i>
                         </a>
                         <a
-                            href=""
+                            href="http://localhost:5173/Community"
                             target="_blank"
                             className="mx-auto mb-3 flex justify-between text-current items-center pr-2 rounded-sm overflow-hidden px-[6px] py-[8px] hover:bg-[rgba(0,0,0,0.05)]"
                             style={{
