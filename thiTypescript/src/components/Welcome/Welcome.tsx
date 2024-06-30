@@ -78,7 +78,7 @@ export default function Welcome({
                             }}
                         >
                             <div className="inline-flex items-center gap-[6px]">
-                                <IconZalo /> <span>Liên hệ qua zalo</span>
+                                <span>Chat AI</span>
                             </div>
                             <i className="bi bi-arrow-right"></i>
                         </a>
@@ -91,7 +91,7 @@ export default function Welcome({
                             }}
                         >
                             <div className="inline-flex items-center gap-[6px]">
-                                <IconMessenger /> <span>Liên hệ qua messenger</span>
+                                <span>Danh Sách từ đã lưu</span>
                             </div>
                             <i className="bi bi-arrow-right"></i>
                         </a>
@@ -104,20 +104,7 @@ export default function Welcome({
                             }}
                         >
                             <div className="inline-flex items-center gap-[6px]">
-                                <IconPhone /> <span>Liên hệ qua điện thoại khoa CNTT</span>
-                            </div>
-                            <i className="bi bi-arrow-right"></i>
-                        </a>
-                        <a
-                            href=""
-                            target="_blank"
-                            className="mx-auto flex justify-between text-current items-center pr-2 rounded-sm overflow-hidden px-[6px] py-[8px] hover:bg-[rgba(0,0,0,0.05)]"
-                            style={{
-                                border: '1px solid #ccc',
-                            }}
-                        >
-                            <div className="inline-flex items-center gap-[6px]">
-                                <IconPhone /> <span>Liên hệ qua điện thoại tuyển sinh</span>
+                                <span>Cộng đồng</span>
                             </div>
                             <i className="bi bi-arrow-right"></i>
                         </a>
