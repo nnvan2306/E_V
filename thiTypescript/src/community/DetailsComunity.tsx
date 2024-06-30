@@ -70,10 +70,12 @@ const DetailsComunity = () => {
     };
 
     useEffect(() => {
-        setInterval(() => {
+        const id = setInterval(() => {
             fetchAPI();
             fetchAPIAll();
         }, 500);
+
+        return () => clearInterval(id);
     }, []);
 
     const isNewMember = (createdAt: string) => {

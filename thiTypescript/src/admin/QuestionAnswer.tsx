@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { SendOutlined } from '@ant-design/icons';
 import { InputTypingEffect } from '../components/InputTypingEffect/InputTypingEffect';
-import _ from "lodash";
+import _ from 'lodash';
 
 const QuestionAnswer = () => {
     const [dataQuestion, setDataQuestion] = useState([]);
@@ -16,13 +16,14 @@ const QuestionAnswer = () => {
     };
     useEffect(() => {
         handelFetchQuesion();
-        setInterval(() => {
+        const id = setInterval(() => {
             handelFetchQuesion();
         }, 1000);
+
+        return () => clearInterval(id);
     }, []);
     const navigate = useNavigate();
     const handelPostQuestion = () => {
-
         if (nameQuestion.trim() == '') {
             toast.error('Vui lòng nhập câu hỏi');
             return;

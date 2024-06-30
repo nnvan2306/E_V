@@ -7,8 +7,19 @@ import { IResponse } from '../../../interface';
 import { handleGetAnswerAi } from '../../../api/chatAiService';
 import Welcome, { TopChatHeading } from '../../Welcome/Welcome';
 import { useLocation } from 'react-router-dom';
+import { Button, Popover } from 'antd';
 
-const Chat = () => {
+const Chat = ({
+    toggle,
+    isShow = false,
+    hiddenWelcome,
+    setTextSearchSuggestions,
+}: {
+    toggle?: () => void;
+    isShow?: boolean;
+    hiddenWelcome?: Function;
+    setTextSearchSuggestions?: React.Dispatch<React.SetStateAction<string>>;
+}) => {
     const [text, setText] = useState<string>('');
     const [inputText, setInputText] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -19,22 +30,12 @@ const Chat = () => {
     const [shouldSpeak, setShouldSpeak] = useState<boolean>(true);
     const [questionSuggest, setQuestionSuggest] = useState<string>('');
     const [data_chat, setData_hat] = useState<Partial<IResponse<any>>[]>([]);
-    const [isWelcome, setIsWelcome] = useState<boolean>(true);
-
-    const location = useLocation().pathname;
-
-    // const { data_chat, updateDataChat } = useAppStore();
-
-    useEffect(() => {
-        if (location === '/chat-ai' || location === '/chat') {
-            setIsWelcome(false);
-            setIsWelcome(false);
-        }
-    }, [location]);
 
     useEffect(() => {
         setText('Xin chào, hiện tại bot có thể giúp gì cho bạn');
     }, []);
+
+    useEffect(() => {}, [inputText]);
 
     useEffect(() => {
         if (isMute) {
@@ -53,10 +54,16 @@ const Chat = () => {
         setText('');
     }, [text, shouldSpeak]);
 
-    // useEffect(() => {
-    //     if (!divRenderChat.current) return;
-    //     divRenderChat.current.scrollIntoView();
-    // }, [data_chat]);
+    useEffect(() => {
+        if (!divRenderChat.current) return;
+        divRenderChat.current.scrollIntoView();
+    }, [data_chat]);
+
+    useEffect(() => {
+        if (data_chat.length > 0) {
+            localStorage.setItem('chats', JSON.stringify(data_chat));
+        }
+    }, [data_chat]);
 
     const handleGetAudioAndSend = () => {
         if (!refAudio.current) return;
@@ -94,65 +101,25 @@ const Chat = () => {
     }, []);
 
     const handleSendMessage = async () => {
-        console.log(inputText);
         if (!inputText) return;
-        setData_hat((prev) => [...prev, { data: inputText, is_ai: true, is_null_result: false, is_mark_down: true }]);
+        setData_hat((prev) => [...prev, { data: inputText, is_ai: false, is_null_result: false, is_mark_down: true }]);
         const data = await handleGetAnswerAi(inputText);
-        // const fetchAPI = async () => {
-        //     const chatUser: any = {
-        //         data: inputText,
-        //         is_ai: false,
-        //     };
-        //     // updateDataChat(chatUser);
-        //     setIsLoading(true);
-        //     const data = await GetRuntimeAI(inputText);
-        //     if (data.is_mark_down && !data.is_table) {
-        //         setText(data.data.content_mark_down);
-        //     }
-        //     if (data.is_unknown || !data) {
-        //         const builderDataUnknown: IResponse<any> = {
-        //             is_mark_down: true,
-        //             is_ai: true,
-        //             is_point: false,
-        //             is_video: false,
-        //             is_unknown: false,
-        //             code: 200,
-        //             match_query: 0,
-        //             match_ai: 0,
-        //             is_table: false,
-        //             msg: 'ok',
-        //             is_audio: false,
-        //             data: {
-        //                 content_html: `
-        //                         <h2>Xin lỗi bot chưa hiểu ý của bạn</h2>
-        //                         <p>I.  Bạn có thể hỏi về</p>
-        //                         <ul>
-        //                             <li>Điểm chuẩn</li>
-        //                             <li>Địa điểm</li>
-        //                             <li>Mã đăng ký xét tuyển</li>
-        //                             <li>Các cơ sở đào tạo</li>
-        //                             <li>Cơ sở vật chất</li>
-        //                             <li>Thông tin khoa công nghệ thông tin</li>
-        //                         </ul>
-        //                     `,
-        //             },
-        //         };
-        //         updateDataChat(builderDataUnknown);
-        //     } else {
-        //         updateDataChat(data);
-        //     }
-        //     setIsLoading(false);
-        //     setInputText('');
-        // };
-        // fetchAPI();
         setInputText('');
     };
+
+    useEffect(() => {
+        const chats = JSON.parse(localStorage.getItem('chats') || 'null');
+        if (!chats) {
+            localStorage.setItem('chats', '[]');
+        } else {
+            setData_hat(chats);
+        }
+    }, []);
 
     useEffect(() => {
         if (!questionSuggest.trim()) {
             return;
         }
-
         setInputText(questionSuggest.trim());
     }, [questionSuggest]);
 
@@ -165,92 +132,135 @@ const Chat = () => {
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleCloseWelcome = () => {
-        setIsWelcome(false);
-    };
+    const [isSuggest, setIsSuggest] = useState<boolean>(true);
 
     return (
         <div
-            className=" d-flex flex-column  position-relative"
+            className=" d-flex flex-col umn  position-relative"
             style={{ background: '#f0f3fa', width: '100%', height: '100%' }}
         >
             <>
-                {' '}
-                <div className="relative" style={{ display: 'flex', justifyContent: 'end' }}>
-                    {/* {location === '/chat-ai' || location === '/chat' ? null : (
-                        // <TopChatHeading
-                        //     is_show_setting
-                        //     height={300}
-                        //     text="Hãy đặt câu hỏi ở phía dưới. bạn có thể sử dụng micro để quá trình nhanh hơn nhé 😉"
-                        // dataMute={{
-                        //     isMute,
-                        //     setIsMute,
-                        // }}
-                        // />
-                    )} */}
-                    <Welcome
-                        isWelcome={isWelcome}
-                        handleCloseWelcome={handleCloseWelcome}
-                        dataMute={{
-                            isMute,
-                            setIsMute,
-                        }}
-                    />
-                </div>
-                <div
-                    className="body-form-chat flex-grow-1 bg-custom px-3  overflow-auto"
-                    style={{ background: '#f0f3fa', paddingTop: '20px' }}
-                >
-                    {/* <HelloUser setQuestionSuggest={setQuestionSuggest} /> */}
-                    {data_chat &&
-                        data_chat.length > 0 &&
-                        data_chat.map((chatItem, index) => {
-                            return <ChatItem data={chatItem} key={index} />;
-                        })}
-                    {isLoading && <PendingResChatUser />}
-                    <div ref={divRenderChat} />
-                </div>
-                <div
-                    className="chat_input d-flex justify-content-between align-items-center custom-height"
-                    style={{
-                        width: '100%',
-                        height: '50px',
-                        borderTop: '1.5px solid #ccc',
-                        alignItems: 'end',
-                        bottom: '0px',
-                        zIndex: '1000',
-                        overflow: 'hidden',
-                        background: '#fff',
-                    }}
-                >
-                    {isWelcome ? (
-                        <></>
-                    ) : (
-                        <>
-                            <InputTypingEffect
-                                placeholder="Hãy nhập câu hỏi bạn cần giải đáp ..."
-                                className="w-100 d-block custom-outline-none custom-padding custom-height custom-font-size"
-                                style={{
-                                    outline: 'none',
-                                    paddingLeft: '15px',
-                                    height: '100%',
-                                    font: ' 14px',
-                                    border: 'none',
-                                    borderBottomLeftRadius: '10px',
-                                }}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)}
-                                value={inputText}
-                                onKeyDown={(e) => {
-                                    if (e.keyCode === 13) {
-                                        handleSendMessage();
-                                    }
-                                }}
-                            />
-
+                {isShow ? (
+                    <div className="relative" style={{ display: 'flex', justifyContent: 'end' }}>
+                        <Welcome
+                            handleCloseWelcome={() => {
+                                if (hiddenWelcome) {
+                                    hiddenWelcome(false);
+                                }
+                            }}
+                            dataMute={{
+                                isMute,
+                                setIsMute,
+                            }}
+                            toggle={toggle}
+                            isHidden={false}
+                        />
+                    </div>
+                ) : (
+                    <>
+                        <Welcome
+                            toggle={toggle}
+                            dataMute={{
+                                isMute: isMute,
+                                setIsMute: setIsMute,
+                            }}
+                            handleCloseWelcome={() => {}}
+                            isHidden
+                        />
+                        <div
+                            className="body-form-chat flex-grow-1 bg-custom px-3  overflow-auto"
+                            style={{ background: '#f0f3fa', paddingTop: '20px' }}
+                        >
+                            {data_chat &&
+                                data_chat.length > 0 &&
+                                data_chat.map((chatItem, index) => {
+                                    return <ChatItem data={chatItem} key={index} />;
+                                })}
+                            {isLoading && <PendingResChatUser />}
+                            <div ref={divRenderChat} />
+                        </div>
+                        <div
+                            className="chat_input d-flex justify-content-between align-items-center custom-height"
+                            style={{
+                                width: '100%',
+                                height: '50px',
+                                borderTop: '1.5px solid #ccc',
+                                alignItems: 'end',
+                                bottom: '0px',
+                                zIndex: '1000',
+                                overflow: 'hidden',
+                                background: '#fff',
+                            }}
+                        >
+                            <Popover
+                                content={
+                                    <div>
+                                        <h3
+                                            style={{
+                                                fontWeight: 600,
+                                                fontSize: 18,
+                                                marginBottom: 14,
+                                            }}
+                                        >
+                                            Có thể bạn đang muốn
+                                        </h3>
+                                        <p>
+                                            Dịch từ <strong>Hello</strong> đúng không
+                                        </p>
+                                        <p className="mb-3 mt-2">
+                                            Nếu đúng hãy click{' '}
+                                            <Button
+                                                type="primary"
+                                                onClick={() => {
+                                                    if (setTextSearchSuggestions) {
+                                                        setTextSearchSuggestions('Hello');
+                                                        setIsSuggest(false);
+                                                    }
+                                                }}
+                                            >
+                                                Vào đây
+                                            </Button>{' '}
+                                            để dịch
+                                        </p>
+                                        <p>
+                                            Nếu không hãy click{' '}
+                                            <Button
+                                                type="dashed"
+                                                onClick={() => {
+                                                    setIsSuggest(false);
+                                                }}
+                                            >
+                                                Vào đây
+                                            </Button>{' '}
+                                            để hủy
+                                        </p>
+                                    </div>
+                                }
+                                placement="top"
+                                open={setTextSearchSuggestions ? isSuggest : false}
+                            >
+                                <InputTypingEffect
+                                    placeholder="Hãy nhập câu hỏi bạn cần giải đáp ..."
+                                    className="w-100 d-block custom-outline-none custom-padding custom-height custom-font-size"
+                                    style={{
+                                        outline: 'none',
+                                        paddingLeft: '15px',
+                                        height: '100%',
+                                        font: ' 14px',
+                                        border: 'none',
+                                        borderBottomLeftRadius: '10px',
+                                    }}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => setInputText(e.target.value)}
+                                    value={inputText}
+                                    onKeyDown={(e) => {
+                                        if (e.keyCode === 13) {
+                                            handleSendMessage();
+                                        }
+                                    }}
+                                />
+                            </Popover>
                             <div className="" style={{ padding: '0 10px' }}>
                                 {inputText ? (
                                     <SendOutlined
@@ -272,9 +282,9 @@ const Chat = () => {
                                     />
                                 )}
                             </div>
-                        </>
-                    )}
-                </div>
+                        </div>
+                    </>
+                )}
             </>
         </div>
     );

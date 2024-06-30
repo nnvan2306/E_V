@@ -3,10 +3,12 @@ import Chat from './Chat/Chat';
 
 const ChatAi = () => {
     return (
-        <div>
+        <>
             <Header />
-            <Chat />
-        </div>
+            <div className="chat-wp-render">
+                <Chat />
+            </div>
+        </>
     );
 };
 

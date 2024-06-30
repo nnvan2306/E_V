@@ -34,9 +34,11 @@ const Header = () => {
     useEffect(() => {
         if (!_.isEmpty(user)) {
             fetchAPI();
-            setInterval(() => {
+            const id = setInterval(() => {
                 fetchAPI();
             }, 1000);
+
+            return () => clearInterval(id);
         }
     }, [user._id]);
 

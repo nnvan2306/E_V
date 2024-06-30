@@ -364,7 +364,7 @@ body {
 
 
 
-.action-display-none{
+.action-display-none {
     display: none;
 }
 
@@ -393,10 +393,14 @@ body {
     }
 }
 
-.position_fixed{
+.position_fixed {
     position: fixed;
 }
 
-.padding-x-body{
+.padding-x-body {
     padding: 20px 100px 0 !important;
+}
+
+.chat-wp-render {
+    height: calc(100vh - 93px);
 }

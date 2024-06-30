@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { createSearchParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { createSearchParams, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { AddForm, addSchema } from '../api/models';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { create, translate } from '../api/products';
@@ -14,6 +14,7 @@ import { Modal } from 'antd';
 import { Typography, notification } from 'antd';
 const { Paragraph, Text } = Typography;
 import type { NotificationArgsProps } from 'antd';
+import Chat from '../components/ChatAi/Chat/Chat';
 
 export default function Add({ handelTranslateShow, handelTranslateHide, getTextTranslate }: any) {
     const [inputText, setInputText] = useState('');
@@ -27,6 +28,7 @@ export default function Add({ handelTranslateShow, handelTranslateHide, getTextT
     const checkEnVi: string | null = queryParameters.get('check');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [api, contextHolder] = notification.useNotification();
+    const [textSearchSuggestions, setTextSearchSuggestions] = useState<string>('');
 
     const openNotification = () => {
         api.open({
@@ -34,6 +36,15 @@ export default function Add({ handelTranslateShow, handelTranslateHide, getTextT
             description: 'Bạn hãy nhập từ dịch sau đó tiếp tục',
         });
     };
+
+    useEffect(() => {
+        if (!textSearchSuggestions.trim()) return;
+        setInputText(textSearchSuggestions);
+        if (inputText) {
+            handleTranslate();
+            setTextSearchSuggestions('');
+        }
+    }, [textSearchSuggestions, inputText]);
 
     const speak = (text: string) => {
         const speechSynthesis = window.speechSynthesis;
@@ -131,8 +142,66 @@ export default function Add({ handelTranslateShow, handelTranslateHide, getTextT
         }
     }, [translatedText, checkEnVi]);
 
+    const [isActive, setIsActive] = useState<boolean>(false);
+    const [isIcon, setIsIcon] = useState<boolean>(true);
+
+    const handleSetOpenIcon = () => {
+        setIsIcon(true);
+    };
+
+    const handleClose = () => {
+        setIsActive(false);
+        setIsIcon(false);
+    };
+
+    const handleToggleModal = () => {
+        setIsActive(!isActive);
+    };
+    const [isShowWelcome, setIsShowWelcome] = useState<boolean>(true);
+
     return (
         <div className="">
+            {isActive && (
+                <div
+                    style={{
+                        width: '400px',
+                        height: '80vh',
+                        position: 'fixed',
+                        bottom: '100px',
+                        right: '40px',
+                        zIndex: 100,
+                        marginTop: '10vh',
+                        borderRadius: '10px',
+                        overflow: 'hidden',
+                        boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+                    }}
+                >
+                    <Chat
+                        isShow={isShowWelcome}
+                        hiddenWelcome={setIsShowWelcome}
+                        toggle={handleToggleModal}
+                        setTextSearchSuggestions={setTextSearchSuggestions}
+                    />
+                </div>
+            )}
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '4px 6px',
+                    color: '#fff',
+                    position: 'fixed',
+                    zIndex: 100,
+                    bottom: '20px',
+                    right: '40px',
+                }}
+                className="icon-plugin"
+                onClick={() => handleToggleModal()}
+            >
+                <span>Robox AI</span>
+                <img src="https://cdn-icons-png.freepik.com/512/8593/8593325.png" alt="chat icon" />
+            </div>
             {contextHolder}
             <Container className="">
                 <Row>

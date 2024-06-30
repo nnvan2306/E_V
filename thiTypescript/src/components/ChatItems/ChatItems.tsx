@@ -1,9 +1,9 @@
 import { Typography } from 'antd';
-import React, { useState } from 'react';
+import React from 'react';
 import { IMessageUser, IResponse } from '../../interface';
 import ChatMarkDown from '../ChatMarkDown/ChatMarkDown';
 
-const { Paragraph, Text } = Typography;
+const { Paragraph } = Typography;
 
 const ChatItem: React.FC<{
     data: Partial<IResponse<any>>;

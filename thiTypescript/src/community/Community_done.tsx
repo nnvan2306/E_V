@@ -143,9 +143,11 @@ export const Community_done = () => {
     };
     useEffect(() => {
         fetchAPI();
-        setInterval(() => {
+        const id = setInterval(() => {
             fetchAPI();
         }, 1000);
+
+        return () => clearInterval(id);
     }, []);
 
     const isNewMember = (createdAt: string) => {
@@ -422,9 +424,9 @@ export const Community_done = () => {
                                                                         >
                                                                             {comment.nameUser}
                                                                         </span>
-                                                                        <span className={styles['post-information']}>
-                                                                            
-                                                                        </span>
+                                                                        <span
+                                                                            className={styles['post-information']}
+                                                                        ></span>
                                                                         <div className="post-information-total">
                                                                             <div className={styles['comment']}>
                                                                                 <div

@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
 // // import { useAppStore } from '@/stores/appStore';
 import { Modal, Space, Switch } from 'antd';
-import { SettingOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import { IconMessenger, IconPhone, IconZalo } from '../Icon/Icon';
 import { useLocation } from 'react-router-dom';
 
 export default function Welcome({
-    isWelcome,
     handleCloseWelcome,
     dataMute,
+    toggle,
+    isHidden,
 }: {
-    isWelcome: boolean;
-    handleCloseWelcome: () => void;
+    toggle?: () => void;
     dataMute: {
         isMute: boolean;
         setIsMute: React.Dispatch<React.SetStateAction<boolean>>;
     };
+    handleCloseWelcome: Function;
+    isHidden?: boolean;
 }) {
-    // const { is_welcome, updateIsWelcome } = useAppStore();
-
     const handleClickStartChat = () => {
-        // updateIsWelcome(!is_welcome);
         handleCloseWelcome();
     };
 
@@ -44,10 +43,9 @@ export default function Welcome({
                     paddingRight: `${handleCheckPathName() ? '20px' : ''}`,
                 }}
             >
-                <TopChatHeading dataMute={dataMute} />
+                <TopChatHeading dataMute={dataMute} toggle={toggle} />
             </div>
-
-            {isWelcome ? (
+            {!isHidden ? (
                 <>
                     <div
                         style={{
@@ -56,17 +54,13 @@ export default function Welcome({
                         className="bg-[#fff] w-[90%] mx-auto mt-[-25px] relative z-[888] rounded-[6px] px-[10px] py-[20px] shadow-md flex flex-col items-center gap-[10px]"
                     >
                         <p>Câu hỏi của bạn sẽ được Robox trả lời ngay 🔥 cùng bắt đầu ngay</p>
-                        {isWelcome ? (
-                            <button
-                                onClick={handleClickStartChat}
-                                className=" text-[#fff] px-4 py-1 "
-                                style={{ backgroundColor: '#634bea', borderRadius: '5px' }}
-                            >
-                                Bắt Đầu Chat
-                            </button>
-                        ) : (
-                            <></>
-                        )}
+                        <button
+                            onClick={handleClickStartChat}
+                            className=" text-[#fff] px-4 py-1 "
+                            style={{ backgroundColor: '#634bea', borderRadius: '5px' }}
+                        >
+                            Bắt Đầu Chat
+                        </button>
                     </div>
                     <div
                         className="bg-[#fff] w-[90%] mx-auto mt-[20px] border-cyan-200 rounded-[6px] px-[10px] py-[20px]"
@@ -130,7 +124,7 @@ export default function Welcome({
                     </div>
                 </>
             ) : (
-                <></>
+                ''
             )}
         </div>
     );
@@ -144,16 +138,15 @@ export const TopChatHeading: React.FC<{
         isMute: boolean;
         setIsMute: React.Dispatch<React.SetStateAction<boolean>>;
     };
+    toggle?: () => void;
 }> = ({
     height = 150,
     text = 'AI rất vui vì được hỗ trợ các bạn, hãy ấn bắt đầu ngay ở dưới.',
-    is_show_setting = true,
     dataMute,
+    is_show_setting = true,
+    toggle,
 }) => {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-
     const location = useLocation().pathname;
-
     const handleCheckPathName = () => {
         if (location === '/chat-ai' || location === '/chat') {
             return true;
@@ -170,10 +163,12 @@ export const TopChatHeading: React.FC<{
                 height: `${handleCheckPathName() ? '50px' : '100%'}`,
             }}
         >
-            {is_show_setting && (
-                <SettingOutlined
+            {!handleCheckPathName() && (
+                <CloseOutlined
                     onClick={() => {
-                        setIsOpen(true);
+                        if (toggle) {
+                            toggle();
+                        }
                     }}
                     className={`bg-[#fff] p-1 rounded-[50%] absolute right-[10px] cursor-pointer`}
                     style={{
@@ -181,6 +176,7 @@ export const TopChatHeading: React.FC<{
                     }}
                 />
             )}
+
             {location === '/chat-ai' || location === '/chat' ? null : (
                 <div className="h-[100%] px-[20px]">
                     <div className="flex gap-[6px] items-center">
@@ -202,38 +198,6 @@ export const TopChatHeading: React.FC<{
                     </div>
                 </div>
             )}
-
-            <Modal
-                title="Thiết lập"
-                open={isOpen}
-                onCancel={() => {
-                    setIsOpen(false);
-                }}
-                onOk={() => {
-                    setIsOpen(false);
-                }}
-            >
-                <Space>
-                    <Space>
-                        <strong>Tắt tiếng</strong>
-                        <Switch
-                            checked={dataMute?.isMute}
-                            onChange={() => {
-                                dataMute?.setIsMute(true);
-                            }}
-                        />
-                    </Space>
-                    <Space>
-                        <strong>Mở tiếng</strong>
-                        <Switch
-                            checked={!dataMute?.isMute}
-                            onChange={() => {
-                                dataMute?.setIsMute(false);
-                            }}
-                        />
-                    </Space>
-                </Space>
-            </Modal>
         </div>
     );
 };
