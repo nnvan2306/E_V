@@ -53,13 +53,7 @@ function ChatItemForBot({ data, is_null_result = false }: { data: Partial<IRespo
                 }}
             >
                 {!is_null_result ? (
-                    <>
-                        {/* {data.is_point && <ChatPoint data={data} />} */}
-                        {data.is_mark_down && <ChatMarkDown data={data} />}
-                        {/* <p className="text-[#878734] opacity-[0.4] text-[12px] float-right mb-2">
-                            Robox dự đoán {Math.floor(data.match_ai * 100)}% phù hợp với bạn
-                        </p> */}
-                    </>
+                    <>{data.is_mark_down && <ChatMarkDown data={data} />}</>
                 ) : (
                     <p>Bot xin lỗi vì chưa thể hiểu ý của bạn</p>
                 )}

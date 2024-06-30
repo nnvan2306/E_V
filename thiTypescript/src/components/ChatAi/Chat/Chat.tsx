@@ -8,6 +8,23 @@ import { handleGetAnswerAi } from '../../../api/chatAiService';
 import Welcome, { TopChatHeading } from '../../Welcome/Welcome';
 import { useLocation } from 'react-router-dom';
 import { Button, Popover } from 'antd';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import Swal from 'sweetalert2';
+
+const apiKey = 'AIzaSyB0TSy9ma9ArMS8MfWrn7OuEqmFU98y_Hk';
+const genAI = new GoogleGenerativeAI(apiKey);
+
+const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+});
+
+const generationConfig = {
+    temperature: 1,
+    topP: 0.95,
+    topK: 64,
+    maxOutputTokens: 8192,
+    responseMimeType: 'text/plain',
+};
 
 const Chat = ({
     toggle,
@@ -29,7 +46,13 @@ const Chat = ({
     const divRenderChat = useRef<HTMLDivElement>(null);
     const [shouldSpeak, setShouldSpeak] = useState<boolean>(true);
     const [questionSuggest, setQuestionSuggest] = useState<string>('');
-    const [data_chat, setData_hat] = useState<Partial<IResponse<any>>[]>([]);
+    const [data_chat, setData_Chat] = useState<Partial<IResponse<any>>[]>([]);
+
+    //
+    const chatSession = model.startChat({
+        generationConfig,
+        history: [],
+    });
 
     useEffect(() => {
         setText('Xin chào, hiện tại bot có thể giúp gì cho bạn');
@@ -102,9 +125,31 @@ const Chat = ({
 
     const handleSendMessage = async () => {
         if (!inputText) return;
-        setData_hat((prev) => [...prev, { data: inputText, is_ai: false, is_null_result: false, is_mark_down: true }]);
-        const data = await handleGetAnswerAi(inputText);
+        setIsLoading(true);
+        setData_Chat((prev) => [
+            ...prev,
+            { data: inputText, is_ai: false, is_null_result: false, is_mark_down: false },
+        ]);
+
+        try {
+            const data = await chatSession.sendMessage(inputText);
+
+            const dataBuider: Partial<IResponse<string>> = {
+                is_mark_down: true,
+                data: data.response.text(),
+                is_ai: true,
+            };
+
+            setData_Chat((prev) => [...prev, dataBuider]);
+        } catch (err) {
+            console.log(err);
+            Swal.fire({
+                icon: 'warning',
+                title: 'Có lỗi xảy ra vui lòng tử lại sau !',
+            });
+        }
         setInputText('');
+        setIsLoading(false);
     };
 
     useEffect(() => {
@@ -112,7 +157,7 @@ const Chat = ({
         if (!chats) {
             localStorage.setItem('chats', '[]');
         } else {
-            setData_hat(chats);
+            setData_Chat(chats);
         }
     }, []);
 
