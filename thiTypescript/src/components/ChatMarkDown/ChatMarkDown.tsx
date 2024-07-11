@@ -29,7 +29,7 @@ const ChatMarkDown: React.FC<{
                     toggle((prev) => !prev);
                 }
             }
-        }, 20);
+        }, 15);
         return () => {
             clearInterval(intr);
         };

@@ -72,9 +72,10 @@ export const Status_ok: React.FC = () => {
                 placeholder="Hãy nhập tiêu đề câu hỏi của bạn"
                 style={{
                     borderBottom: '1px solid #ccc',
+                    padding: '6px 10px',
                 }}
             />
-            <FontSelector onChange={handleFontChange} />
+            {/* <FontSelector onChange={handleFontChange} /> */}
             <ReactQuill
                 className={styles['hghghgh']}
                 style={{ fontFamily: font }}

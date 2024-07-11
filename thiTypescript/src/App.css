@@ -111,10 +111,21 @@ body {
     }
 }
 
+.render_chat_content {
+    width: 400px;
+    right: 40px;
+}
+
 @media (max-width: 576px) {
     .px-5-cus {
         padding: 0 10px !important;
     }
+
+    .render_chat_content {
+        width: 100%;
+        right: 0;
+    }
+
 
     .save-user-item {
         width: 100%;
